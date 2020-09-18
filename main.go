@@ -12,8 +12,9 @@ import (
 )
 
 const (
-	queryItems = "https://qiita.com/api/v2/authenticated_user/items?page=%d&per_page=100"
-	articleDir = "article"
+	queryItems    = "https://qiita.com/api/v2/authenticated_user/items?page=%d&per_page=100"
+	articleDir    = "article"
+	fetchInterval = 100 // msec
 )
 
 func download(url string, token string) ([]byte, error) {
@@ -72,6 +73,8 @@ func main() {
 				panic(err)
 			}
 			ioutil.WriteFile(filename, body, 0644)
+
+			time.Sleep(time.Millisecond * fetchInterval)
 		}
 		page += 1
 	}
