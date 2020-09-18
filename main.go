@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
 )
 
 const (
@@ -52,8 +53,18 @@ func main() {
 		}
 
 		for _, item := range items {
-			title, url := item["title"], item["url"]
-			fmt.Println(url, title)
+			url, _ := item["url"].(string)
+			url = url + ".md"
+			createdAt, _ := item["created_at"].(string)
+			date, _ := time.Parse(time.RFC3339, createdAt)
+			filename := "article" + date.Format("20060102T150405") + ".md"
+
+			fmt.Println(url, filename, item["title"])
+			body, err := download(url, token)
+			if err != nil {
+				panic(err)
+			}
+			ioutil.WriteFile(filename, body, 0644)
 		}
 		page += 1
 	}
