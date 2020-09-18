@@ -5,12 +5,15 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"time"
 )
 
 const (
 	queryItems = "https://qiita.com/api/v2/authenticated_user/items?page=%d&per_page=100"
+	articleDir = "article"
 )
 
 func download(url string, token string) ([]byte, error) {
@@ -38,6 +41,10 @@ func main() {
 	}
 	token := strings.TrimSuffix(string(tokenBytes), "\n")
 
+	if err := os.Mkdir(articleDir, 0777); err != nil {
+		panic(err)
+	}
+
 	page := 1
 	for {
 		itemsJson, err := download(fmt.Sprintf(queryItems, page), token)
@@ -57,7 +64,7 @@ func main() {
 			url = url + ".md"
 			createdAt, _ := item["created_at"].(string)
 			date, _ := time.Parse(time.RFC3339, createdAt)
-			filename := "article" + date.Format("20060102T150405") + ".md"
+			filename := filepath.Join(articleDir, date.Format("20060102T150405")+".md")
 
 			fmt.Println(url, filename, item["title"])
 			body, err := download(url, token)
