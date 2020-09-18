@@ -1,2 +1,5 @@
 # fetch-qiita
-fetch items from Qiita
+Fetch all myself items from [Qiita](https//qiita.com/).
+
+## License
+MIT License
